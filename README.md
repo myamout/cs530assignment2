@@ -12,4 +12,10 @@ There are many different C++ compilers, to make sure we are all using the same o
 + Everyone should work on their own branch and towards the due date we can merge everything together
 + To create your own branch to work on using the terminal do `git checkout -b branch_name`
 + To see what branch you are working on do `git branch`
-+ To push your changes to your own branch do `git push origin your_branch_name`
+
+##Updating Your Branch
+Follow the steps below to update your branch
++ `git add .` (The "." indicates to add everything in the folder to the repo)
++ `git commit -m "message goes here"` (This will add a message of what was changed. Make this a little descriptive so everyone knows what's going on)
++ `git push origin branch_name` (Pushes changes to your branch)
++ `git status` (This command will let you know if your branch is up to date or not)
