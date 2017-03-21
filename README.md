@@ -8,7 +8,7 @@
 There are many different C++ compilers, to make sure we are all using the same one use this line to complie your code
 + `g++ -std=c++11 file_name.cpp -o output_file`
 
-##Branches And Github Tips
+## Branches And Github Tips
 + Everyone should work on their own branch and towards the due date we can merge everything together
 + To create your own branch to work on using the terminal do `git checkout -b branch_name`
 + To see what branch you are working on do `git branch`
