@@ -60,3 +60,21 @@ std::map<const short int, const std::string> opcode_table = {
   {0xB8, "TIXR"},
   {0xDC, "WD"}
 };
+
+std::map<const char, const int> hex_conversion = {
+  {'1', 1},
+  {'2', 2},
+  {'3', 3},
+  {'4', 4},
+  {'5', 5},
+  {'6', 6},
+  {'7', 7},
+  {'8', 8},
+  {'9', 9},
+  {'A', 10},
+  {'B', 11},
+  {'C', 12},
+  {'D', 13},
+  {'E', 14},
+  {'F', 15}
+};
