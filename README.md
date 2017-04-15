@@ -1,5 +1,12 @@
 # Assignment2 CS530 using C++
 
+## What currently works...
++ Program will read in the sample.sym file and build out a map for the symbol values as well as all the literal values (see documentation in the program)
++ The opcode.h file holds a map that has the instructions as well as a map for hex conversions
++ We now need to work on parsing the object code now for the instructions and building out the source code..
+
+
+
 ## Getting Started
 + First you'll need to pull to repo, do `git clone http_link_in_repo folder_to_save_repo`
 + An example of the above would be `git clone https://github.com/username/assignment assignment2`
