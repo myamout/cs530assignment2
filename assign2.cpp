@@ -4,6 +4,7 @@
 std::vector<std::string> symTab;
 std::map<std::string, std::map<std::string, std::string>> symbolValues;
 std::map<std::string, std::map<std::string, std::string>> literalValues;
+std::vector<std::string> sourceCode;
 
 int get_textColLen(char tens, char ones) {
   int onesPlace = hex_conversion[ones];
@@ -21,7 +22,7 @@ std::string get_opcode_instruction(char tens, char ones) {
   return opcode;
 }
 
-void readObj(char *fname) {
+void tempFunc(char *fname) {
   std::ifstream file(fname, std::ios::binary);
   /*
     Read the object code in this method...
@@ -53,6 +54,42 @@ void readObj(char *fname) {
   std::string opcode_insruction = get_opcode_instruction(textObjCode[0], textObjCode[1]);
   std::cout << opcode_insruction << '\n';
 
+}
+
+void headerRecord(std::string line) {
+  /*
+    This function will build the header line instruction 
+  */
+  std::string progName = line.substr(1, 6);
+  std::string startingAddr = line.substr(7, 6);
+  std::string progLength = line.substr(13, 6);
+  std::stringstream stream;
+  stream << std::setw(9) << std::left << progName << "START   " << startingAddr << std::endl;
+  std::string headerLine = stream.str();
+  sourceCode.push_back(headerLine);
+}
+
+void textRecord(std::string line) {}
+void modRecord(std::string line) {}
+void endRecord(std::string line) {}
+
+void readObj(char *fname) {
+  std::ifstream objFile (fname, std::ifstream::in);
+  std::string line;
+  while(objFile.good()) {
+    getline(objFile, line);
+    if (line[0] != (char)NULL) {
+      if (line[0] == 'H') {
+        headerRecord(line);
+      } else if (line[0] == 'T') {
+        textRecord(line);
+      } else if (line[0] == 'M') {
+        modRecord(line);
+      } else if (line[0] == 'E') {
+        endRecord(line);
+      }
+    } 
+  }
 }
 
 void readSym(char *fname) {
@@ -109,5 +146,6 @@ void readSym(char *fname) {
 int main(int argc, char *argv[])
 {
   readSym(argv[2]);
+  readObj(argv[1]);
   return 0;
 }
