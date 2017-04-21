@@ -1,9 +1,18 @@
 # Assignment2 CS530 using C++
 
-## What currently works...
-+ Program will read in the sample.sym file and build out a map for the symbol values as well as all the literal values (see documentation in the program)
-+ The opcode.h file holds a map that has the instructions as well as a map for hex conversions
-+ We now need to work on parsing the object code now for the instructions and building out the source code..
+## What currently works/TODO...
++ We need the parseFlags method to return an array that represents XPBE so we can determine if the instruction is Format 4
++ The Text Record while loop is basically set up. We now need to touch it up and write the methods for Format 3 and Format 4
++ Don't really worry about the software design portion, I can do that fairly quickly
+
+## Format Three
+1. Parse the Opcode for the instruction (Check for -1, the #. If not this then do -3 for the opcode)
+2. Do the necessary subtraction for the relative address and then check the symbol hashmap for the correct value
+3. Form the source code as a string (See the header record method for an example on that)
+
+## Format Four
++ Format Four should go the same as the format 3 method, but instead of doing any subtraction just do a direct lookup in the symtab hasmap
++ Don't forget to add a "+" when formatting the source code string.
 
 
 
