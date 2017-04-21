@@ -8,3 +8,5 @@
 #include <sstream>
 #include <vector>
 #include <stdlib.h>
+#include <array>
+#include <locale>

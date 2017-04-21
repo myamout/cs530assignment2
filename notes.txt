@@ -1,0 +1,11 @@
+NIXBPE Meanings
+If N = 0 and I = 1: Immediate addressing aka "#"
+If N = 1 and I = 0: No "#"
+If N = 0 and I = 0: Format 3 backwards compatable with Format 1 and 2
+
+If X = 1: The term X is added to the target address calculation
+
+If B = 0 and P = 0: The disp field is taken to the target address
+
+If E = 1: Format 4
+if E = 0: Format 3
