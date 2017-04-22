@@ -61,7 +61,7 @@ std::string convertAddressToHexString(int startingAddress) {
 
 }
 
-std::string getDisp(std::string instruction, int format) {
+std::string getDisp(std::string instruction, int format, std::string currentAddress) {
   std::stringstream stream;
   std::string disp;
   /* 
@@ -87,28 +87,37 @@ std::string getDisp(std::string instruction, int format) {
     stream << instruction[instruction.length() - 2];
     stream << instruction[instruction.length() - 1];
     disp = stream.str();
-    
-    return disp;
+    disp = "0x" + disp;
+    currentAddress = "0x" + currentAddress;
+    unsigned int x = std::stoul(disp, nullptr, 16);
+    unsigned int y = std::stoul(currentAddress, nullptr, 16);
+    int swag = x + y + 3;
+    std::string test = convertAddressToHexString(swag);
+    test = getZeros(test.length()) + test;
+    if (symbolValues.count(test) > 0) {
+      return symbolValues[test]["name"];
+    } 
   }
+  return "";
 }
 
 void literalHandler(std::string instruction, std::map<std::string, std::string> literal, std::string currentAddress) {
   std::array<std::string, 2> opcode = get_opcode_instruction(instruction[0], instruction[1]);
-  std::cout << currentAddress << "     " << opcode[0] << "     " << literal["literal"] << std::endl;
+  std::cout << "         " << opcode[0] << "     " << literal["literal"] << std::endl;
 }
 
 int formatFourHandler(std::string instruction, std::array<int, 4> flags, std::string currentAddress) {
   std::array<std::string, 2> opcode = get_opcode_instruction(instruction[0], instruction[1]);
-  std::cout << currentAddress << "     " << "+" << opcode[0] << "     ";
+  std::cout << "         " << "+" << opcode[0] << "     ";
   if (opcode[1].compare("1") == 0) {
     std::cout << "#";
   }
-  std::string disp = getDisp(instruction, 1);
+  std::string disp = getDisp(instruction, 1, currentAddress);
   std::cout << disp;
   std::cout << std::endl;
   // If the opcode instruction loads the base then we need to incrememnt the address by one?
   if (opcode[0].compare("LDB") == 0) {
-    std::cout << "            BASE" << std::endl;
+    std::cout << "        BASE" << "    " << disp <<std::endl;
     return 1;
   }
   return 0;
@@ -116,11 +125,18 @@ int formatFourHandler(std::string instruction, std::array<int, 4> flags, std::st
 
 int formatThreeHandler(std::string instruction, std::array<int, 4> flags, std::string currentAddress) {
   std::array<std::string, 2> opcode = get_opcode_instruction(instruction[0], instruction[1]);
-  std::cout << currentAddress << "     " << opcode[0] << "     ";
+  if (currentAddress.compare("000000") == 0) {
+    std::cout << "FIRST" << "     " << opcode[0] << "     ";
+  } else if (symbolValues.count(currentAddress) > 0) {
+    std::cout << symbolValues[currentAddress]["name"] << "     " << opcode[0] << "     ";
+  } else {
+    std::cout << "         " << opcode[0] << "     "; 
+  }
+  
   if (opcode[1].compare("1") == 0) {
     std::cout << "#";
   }
-  std::string disp = getDisp(instruction, 0);
+  std::string disp = getDisp(instruction, 0, currentAddress);
   std::cout << disp << std::endl;
   if (opcode[0].compare("LDB") == 0) {
     std::cout << "        BASE" << std::endl;
