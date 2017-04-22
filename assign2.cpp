@@ -13,64 +13,41 @@ int get_textColLen(char tens, char ones) {
   return (onesPlace + tensPlace) * 2;
 }
 
-std::string get_opcode_instruction(char tens, char ones) {
+std::string get_opcode_instruction(char tens, char ones, int formatFlag) {
   std::string opcode;
   opcode += "0x";
   opcode += tens;
   opcode += ones;
   unsigned int x = std::stoul(opcode, nullptr, 16);
-  opcode = opcode_table[x - 1];
+  if (formatFlag == 1) {
+    if (opcode_table.count(x - 1) > 0) {
+      opcode = opcode_table[x - 1];
+    } else if (opcode_table.count(x - 3) > 0) {
+      opcode = opcode_table[x - 3];
+    }
+  } else {
+    opcode = opcode_table[x - 1];
+  }
   return opcode;
 }
 
-void tempFunc(char *fname) {
-  std::ifstream file(fname, std::ios::binary);
-  /*
-    Read the object code in this method...
-    1. Read the header column
-    2. Start reading through all of the Text columns
-    3. Use the End record as a stop condition somehow
-    4. Each Object read needs to be checked for extended format...
-    5. Need to figure out the parse here. 
 
-    The main structures are already set-up here so we just need to figure out how to parse and store each string
-    in a List Node
-  */
-  
-  char headerCol[19];
-  char textRecordLen[10];
-  file.read(headerCol, 19);
-  for (auto& n : headerCol) {
-    std::cout << n;
-  }
-  std::cout << '\n';
-  file.read(textRecordLen, 10);
-  for (auto& n : textRecordLen) {
-    std::cout << n;
-  }
-  std::cout << '\n';
-  int textColLen = get_textColLen(textRecordLen[8], textRecordLen[9]);
-  char textObjCode[textColLen];
-  file.read(textObjCode, textColLen);
-  std::string opcode_insruction = get_opcode_instruction(textObjCode[0], textObjCode[1]);
-  std::cout << opcode_insruction << '\n';
-
-}
 
 std::array<int, 4> parseFlags(std::string instruction) {
-  char nixpbe = instruction[2];
+  int nixpbe = hex_conversion[instruction[2]];
   std::array<int, 4> returnArray {{0, 0, 0, 0}};
   for (int i = 3; i >= 0; i = i - 1) {
-    if ((nixpbe & (1 << i)) == 1) {
-      std::get<i>(returnArray) = 1;
-    } else {
-      std::get<i>(returnArray) = 0;
-    }
+    returnArray[i] = nixpbe & (1 << i) ? 1 : 0;
   }
+  std::reverse(std::begin(returnArray), std::end(returnArray));
+  // for (int i = 0; i < returnArray.size(); i = i + 1) {
+  //   std::cout << returnArray[i];
+  // }
+  // std::cout << std::endl;
+ 
   // for (int i = 3; i >= 0; i = i - 1) {
   //   std::cout << ((nixpbe & (1 << i))? 1 : 0);
   // }
-  // std::cout << std::endl;
   return returnArray;
 }
 
@@ -92,6 +69,22 @@ std::string convertAddressToHexString(int startingAddress) {
   }
   return temp;
 
+}
+
+void literalHandler(std::string instruction, std::map<std::string, std::string> literal) {
+  std::cout << instruction <<std::endl;
+  std::cout << literal["length"] << std::endl;
+  std::cout << literal["literal"] << std::endl;
+}
+
+void formatFourHandler(std::string instruction, std::array<int, 4> flags) {
+  std::string opcode = get_opcode_instruction(instruction[0], instruction[1], 0);
+  std::cout << "+" << opcode << std::endl;
+}
+
+void formatThreeHandler(std::string instruction, std::array<int, 4> flags) {
+  std::string opcode = get_opcode_instruction(instruction[0], instruction[1], 1);
+  std::cout << opcode << std::endl;
 }
 
 void headerRecord(std::string line) {
@@ -128,7 +121,7 @@ void textRecord(std::string line) {
   int textColLength = get_textColLen(tensPlace, onesPlace);
   std::string instructions = line.substr(9, textColLength);
 
-  while (currentInstruction <= line.length()) {
+  while (currentInstruction <= line.length() - 6) {
     
     /* 
     ` 1. check literal map to see if address is there and then grab extra stuff depending on the length of the literal
@@ -156,6 +149,9 @@ void textRecord(std::string line) {
       std::string hexLength = temp.str();
       int extraBytes = std::stoi(hexLength);
       std::string instruction = line.substr(currentInstruction, bytesToPull + extraBytes);
+      
+      //literalHandler(instruction, literalValues[currentAddress]);
+      
       currentInstruction = currentInstruction + bytesToPull + extraBytes;
       startingAddress = startingAddress + 3;
     } else {
@@ -172,15 +168,18 @@ void textRecord(std::string line) {
       */
       if (flags[3] == 1) {
         instruction = line.substr(currentInstruction, bytesToPull + 2);
-        //std::cout << instruction << std::endl;
+
+        formatFourHandler(instruction, flags);
+        
         startingAddress = startingAddress + 4;
-        currentInstruction = currentInstruction + bytesToPull + 2;
+        currentInstruction = currentInstruction + 8;
       }
       /* 
         Nothing special to do here, we've already parsed out our six bytes!
       */ 
       else {
-        //std::cout << instruction << std::endl;
+        formatThreeHandler(instruction, flags);
+
         currentInstruction = currentInstruction + 6;
         startingAddress = startingAddress + 3;
       }
