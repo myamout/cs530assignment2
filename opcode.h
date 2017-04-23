@@ -1,3 +1,10 @@
+/* 
+  Matthew Yamout cssc1002
+  James Hammon   cssc0895
+  Veer Talta     cssc0847
+  opcode.h
+*/
+
 #include <map>
 #include <string>
 
