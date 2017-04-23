@@ -556,19 +556,27 @@ void readSym(std::string fname) {
   }
 }
 
+bool findFile(std::string objFile) {
+  std::ifstream file(objFile);
+  return file.good();
+}
+
 int main(int argc, char *argv[])
 {
-  std::string symbolFile;
   std::string objFile = argv[1];
-  for (auto const &e : objFile) {
-    if (e == '.') {
-      break;
-    } else {
-      symbolFile += e;
+  bool fileExists = findFile(objFile);
+  if (fileExists) {
+    std::string symbolFile;
+    for (auto const &e : objFile) {
+      if (e == '.') {
+        break;
+      } else {
+        symbolFile += e;
+      }
     }
+    symbolFile = symbolFile + ".sym";
+    readSym(symbolFile);
+    readObj(argv[1]);
   }
-  symbolFile = symbolFile + ".sym";
-  readSym(symbolFile);
-  readObj(argv[1]);
   return 0;
 }
