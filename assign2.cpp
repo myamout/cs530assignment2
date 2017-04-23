@@ -561,20 +561,25 @@ bool findFile(std::string objFile) {
   return file.good();
 }
 
-int main(int argc, char *argv[])
-{
-  std::string objFile = argv[1];
-  bool fileExists = findFile(objFile);
-  if (fileExists) {
-    std::string symbolFile;
-    for (auto const &e : objFile) {
+std::string generateSymbolFileName(std::string objFile) {
+  std::string symbolFile;
+  for (auto const &e : objFile) {
       if (e == '.') {
         break;
       } else {
         symbolFile += e;
       }
     }
-    symbolFile = symbolFile + ".sym";
+    return symbolFile + ".sym";
+}
+
+int main(int argc, char *argv[])
+{
+  std::string objFile = argv[1];
+  bool fileExists = findFile(objFile);
+  if (fileExists) {
+    std::string symbolFile;
+    symbolFile = generateSymbolFileName(objFile);
     readSym(symbolFile);
     readObj(argv[1]);
   }
